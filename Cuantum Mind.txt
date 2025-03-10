@@ -1,0 +1,163 @@
+import numpy as np
+import random
+import matplotlib.pyplot as plt
+from scipy.linalg import expm
+from qiskit import Aer, QuantumCircuit, transpile, assemble, execute
+import time
+from sklearn.neural_network import MLPRegressor
+
+# Clase para representar las células cuánticas jerárquicas
+class QuantumCell:
+    def __init__(self, dimensions=9, parallel_dimensions=12, level=1, state_vector=None):
+        self.dimensions = dimensions
+        self.parallel_dimensions = parallel_dimensions
+        self.level = level
+        self.state_vector = state_vector if state_vector is not None else np.random.random((1, dimensions))
+        self.state_vector /= np.linalg.norm(self.state_vector)
+        self.subcells = []  # Contendrá células de nivel más bajo (cerebros dentro de cerebros)
+        self.generate_subcells()  # Generamos las subcélulas en función del nivel
+
+    # Método para generar subcélulas de "cerebros" dentro de esta célula
+    def generate_subcells(self):
+        if self.level < 4:  # Limitar la jerarquía a 4 niveles de "cerebros dentro de cerebros"
+            num_subcells = random.randint(1, 3)  # Cada célula puede tener entre 1 y 3 subcélulas
+            for _ in range(num_subcells):
+                self.subcells.append(QuantumCell(
+                    dimensions=self.dimensions,
+                    parallel_dimensions=self.parallel_dimensions,
+                    level=self.level + 1
+                ))
+
+    # Interferencia cuántica en la célula (con dimensiones adicionales)
+    def quantum_interference(self):
+        interference_matrix = np.array([
+            [1, 0],
+            [0, -1]
+        ])
+        self.state_vector = np.dot(interference_matrix, self.state_vector)
+        
+        # Recursión en las subcélulas
+        for subcell in self.subcells:
+            subcell.quantum_interference()
+
+    # Optimización cuántica en la célula
+    def quantum_optimization(self, learning_rate=0.01):
+        model = MLPRegressor(hidden_layer_sizes=(10,), max_iter=500)
+        model.fit(self.state_vector, np.random.random(self.state_vector.shape))
+        predicted_state = model.predict(self.state_vector)
+        self.state_vector = predicted_state.reshape(self.state_vector.shape)
+        
+        # Recursión en las subcélulas
+        for subcell in self.subcells:
+            subcell.quantum_optimization()
+
+    # Entrelazamiento cuántico entre células
+    def quantum_entanglement(self, other_cell):
+        self.state_vector = np.kron(self.state_vector, other_cell.state_vector)
+        
+        # Recursión en las subcélulas
+        for subcell in self.subcells:
+            subcell.quantum_entanglement(other_cell)
+
+    # Predicción cuántica
+    def quantum_prediction(self):
+        prediction_model = np.random.rand(self.state_vector.shape[0], self.state_vector.shape[1])
+        self.state_vector = np.dot(self.state_vector, prediction_model)
+
+        # Recursión en las subcélulas
+        for subcell in self.subcells:
+            subcell.quantum_prediction()
+
+    # Simulación cuántica con fluctuaciones estocásticas
+    def stochastic_quantum_effects(self):
+        noise = np.random.normal(0, 0.1, self.state_vector.shape)
+        self.state_vector += noise
+        
+        # Recursión en las subcélulas
+        for subcell in self.subcells:
+            subcell.stochastic_quantum_effects()
+
+    # Visualización del estado de la célula cuántica
+    def visualize(self):
+        plt.plot(self.state_vector)
+        plt.title(f"Estado Cuántico de la Célula con {self.dimensions} Dimensiones y Nivel {self.level}")
+        plt.show()
+
+    # Función de cálculo en múltiples dimensiones cuánticas y paralelas
+    def calculate_in_parallel_dimensions(self):
+        # Realizamos la simulación en 9 dimensiones cuánticas y 12 dimensiones paralelas
+        global_state = np.random.random((self.dimensions, self.parallel_dimensions))
+        global_state /= np.linalg.norm(global_state)
+        for i in range(self.parallel_dimensions):
+            global_state[:, i] = np.dot(global_state[:, i], self.state_vector)
+        
+        # Recursión para calcular las subcélulas en dimensiones paralelas
+        for subcell in self.subcells:
+            subcell.calculate_in_parallel_dimensions()
+        
+        return global_state
+
+# Función principal para el modelo cuántico con células jerárquicas
+def main():
+    # Inicializamos las células cuánticas jerárquicas con 9 dimensiones cuánticas y 12 dimensiones paralelas
+    cells = [QuantumCell() for _ in range(6)]  # Se crean 6 células jerárquicas
+    
+    for i, cell in enumerate(cells):
+        print(f"\nCélula {i+1} - Estado inicial:")
+        print(cell.state_vector)
+
+        # Interacción cuántica en la célula
+        start_time = time.time()
+        cell.quantum_interference()
+        print(f"Estado después de interferencia en la célula {i+1}:")
+        print(cell.state_vector)
+        print(f"Tiempo de interferencia: {time.time() - start_time:.6f} segundos")
+
+        # Optimización cuántica en la célula
+        start_time = time.time()
+        cell.quantum_optimization()
+        print(f"Estado después de optimización cuántica en la célula {i+1}:")
+        print(cell.state_vector)
+        print(f"Tiempo de optimización cuántica: {time.time() - start_time:.6f} segundos")
+
+        # Predicción cuántica avanzada en la célula
+        start_time = time.time()
+        cell.quantum_prediction()
+        print(f"Estado después de predicción cuántica en la célula {i+1}:")
+        print(cell.state_vector)
+        print(f"Tiempo de predicción cuántica: {time.time() - start_time:.6f} segundos")
+
+        # Fluctuaciones cuánticas en la célula
+        start_time = time.time()
+        cell.stochastic_quantum_effects()
+        print(f"Estado después de fluctuaciones cuánticas en la célula {i+1}:")
+        print(cell.state_vector)
+        print(f"Tiempo de fluctuaciones cuánticas: {time.time() - start_time:.6f} segundos")
+
+        # Visualización del estado cuántico de la célula
+        cell.visualize()
+
+        # Cálculo cuántico en 9 dimensiones y 12 dimensiones paralelas
+        start_time = time.time()
+        global_state = cell.calculate_in_parallel_dimensions()
+        print(f"Estado global después de cálculo en múltiples dimensiones cuánticas y paralelas en la célula {i+1}:")
+        print(global_state)
+        print(f"Tiempo de cálculo en dimensiones paralelas: {time.time() - start_time:.6f} segundos")
+
+        # Interacción subatómica cuántica de la célula
+        start_time = time.time()
+        cell.subatomic_quantum_interaction()
+        print(f"Estado después de interacción subatómica en la célula {i+1}:")
+        print(cell.state_vector)
+        print(f"Tiempo de interacción subatómica: {time.time() - start_time:.6f} segundos")
+
+    # Interacción cuántica entre células
+    print("\nInteracción cuántica entre las células:")
+    for i in range(len(cells)-1):
+        cells[i].quantum_entanglement(cells[i+1])
+        print(f"Estado después de entrelazamiento entre célula {i+1} y célula {i+2}:")
+        print(cells[i].state_vector)
+
+
+if __name__ == "__main__":
+    main()
